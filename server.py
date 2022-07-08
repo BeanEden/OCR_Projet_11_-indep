@@ -1,4 +1,5 @@
 import json
+import datetime
 from flask import Flask,render_template,request,redirect,flash,url_for
 
 
@@ -20,6 +21,24 @@ app.secret_key = 'something_special'
 competitions = loadCompetitions()
 clubs = loadClubs()
 
+def datetime_check(competition):
+    today = date_str_split(str(datetime.datetime.now()))
+    competition_date = date_str_split(competition['date'])
+
+    if int(today) < int(competition_date):
+        competition['status'] = 'open'
+    else:
+        competition['status'] = 'closed'
+    return competition
+
+
+def date_str_split(date):
+    days = date[:10].replace("-","")
+    hours = date[11:16].replace(":","")
+    date = days+hours
+    return str(date)
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -27,6 +46,8 @@ def index():
 @app.route('/showSummary',methods=['POST'])
 def showSummary():
     club = [club for club in clubs if club['email'] == request.form['email']][0]
+    for i in competitions:
+        i = datetime_check(i)
     return render_template('welcome.html',club=club,competitions=competitions)
 
 
@@ -47,6 +68,9 @@ def purchasePlaces():
     club = [c for c in clubs if c['name'] == request.form['club']][0]
     placesRequired = int(request.form['places'])
     competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
+    with open('competitions.json', "w") as cr:
+        data = {'competitions': competitions}
+        json.dump(data, cr)
     flash('Great-booking complete!')
     return render_template('welcome.html', club=club, competitions=competitions)
 
