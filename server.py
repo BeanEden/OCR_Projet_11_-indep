@@ -20,6 +20,36 @@ app.secret_key = 'something_special'
 competitions = loadCompetitions()
 clubs = loadClubs()
 
+
+def loadPlacesAlreadyBooked(competition, club):
+    if len(competition['clubsParticipating']) > 0:
+        count = 0
+        for i in competition['clubsParticipating']:
+            if club['name'] == i['club']:
+                count += 1
+                return int(i['placesBooked'])
+        if count == 0:
+            return 0
+    else:
+        return 0
+
+
+def updatePlacesBookedOrCreate(competition, club, places):
+    if len(competition['clubsParticipating']) > 0:
+        count=0
+        for i in competition['clubsParticipating']:
+            if club['name'] == i['club']:
+                i['placesBooked'] = places
+                count += 1
+        if count == 0:
+            competition["clubsParticipating"].append(
+                {'club': club['name'], 'placesBooked': places})
+        return competition
+    else:
+        competition["clubsParticipating"].append({'club': club['name'], 'placesBooked': places})
+        return competition
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -45,10 +75,24 @@ def book(competition,club):
 def purchasePlaces():
     competition = [c for c in competitions if c['name'] == request.form['competition']][0]
     club = [c for c in clubs if c['name'] == request.form['club']][0]
+    placesAlreadyBooked = loadPlacesAlreadyBooked(competition, club)
     placesRequired = int(request.form['places'])
     competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
-    flash('Great-booking complete!')
-    return render_template('welcome.html', club=club, competitions=competitions)
+    totalPlacesBooked = placesAlreadyBooked + placesRequired
+    if  totalPlacesBooked > 12:
+        error_message = "You can't book more than 12 places for an event"
+        return render_template('booking.html', club=club, competition=competition, placesAlreadyBooked=placesAlreadyBooked,
+                               error_message=error_message)
+    else:
+        competition['numberOfPlaces'] = int(
+            competition['numberOfPlaces']) - placesRequired
+        competition = updatePlacesBookedOrCreate(competition, club,
+                                                 totalPlacesBooked)
+        with open('competitions.json', "w") as cr:
+            data = {'competitions': competitions}
+            json.dump(data, cr)
+        flash('Great-booking complete!')
+        return render_template('welcome.html', club=club, competitions=competitions)
 
 
 # TODO: Add route for points display
