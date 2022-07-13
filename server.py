@@ -1,15 +1,16 @@
 import json
 from flask import Flask,render_template,request,redirect,flash,url_for
+import os
 
 
 def loadClubs():
-    with open('clubs.json') as c:
+    with open(os.getcwd()+'/database/clubs.json') as c:
          listOfClubs = json.load(c)['clubs']
          return listOfClubs
 
 
 def loadCompetitions():
-    with open('competitions.json') as comps:
+    with open(os.getcwd()+'/database/competitions.json') as comps:
          listOfCompetitions = json.load(comps)['competitions']
          return listOfCompetitions
 
@@ -22,31 +23,41 @@ clubs = loadClubs()
 
 
 def loadPlacesAlreadyBooked(competition, club):
-    if len(competition['clubsParticipating']) > 0:
-        count = 0
-        for i in competition['clubsParticipating']:
-            if club['name'] == i['club']:
-                count += 1
-                return int(i['placesBooked'])
-        if count == 0:
+    try :
+        if len(competition['clubsParticipating']) > 0:
+            count = 0
+            for i in competition['clubsParticipating']:
+                if club['name'] == i['club']:
+                    count += 1
+                    return int(i['placesBooked'])
+            if count == 0:
+                return 0
+        else:
             return 0
-    else:
+    except KeyError:
+        competition['clubsParticipating'] = [
+            {'club': club['name'], 'placesBooked':0}]
         return 0
 
 
 def updatePlacesBookedOrCreate(competition, club, places):
-    if len(competition['clubsParticipating']) > 0:
-        count=0
-        for i in competition['clubsParticipating']:
-            if club['name'] == i['club']:
-                i['placesBooked'] = places
-                count += 1
-        if count == 0:
-            competition["clubsParticipating"].append(
-                {'club': club['name'], 'placesBooked': places})
-        return competition
-    else:
-        competition["clubsParticipating"].append({'club': club['name'], 'placesBooked': places})
+    try:
+        if len(competition['clubsParticipating']) > 0:
+            count = 0
+            for i in competition['clubsParticipating']:
+                if club['name'] == i['club']:
+                    i['placesBooked'] = places
+                    count += 1
+            if count == 0:
+                competition["clubsParticipating"].append(
+                    {'club': club['name'], 'placesBooked': places})
+            return competition
+        else:
+            competition["clubsParticipating"].append({'club': club['name'], 'placesBooked': places})
+            return competition
+    except KeyError:
+        competition['clubsParticipating'] = [
+            {'club': club['name'], 'placesBooked':places}]
         return competition
 
 
@@ -54,18 +65,19 @@ def updatePlacesBookedOrCreate(competition, club, places):
 def index():
     return render_template('index.html')
 
-@app.route('/showSummary',methods=['POST'])
+
+@app.route('/showSummary', methods=['POST'])
 def showSummary():
     club = [club for club in clubs if club['email'] == request.form['email']][0]
-    return render_template('welcome.html',club=club,competitions=competitions)
+    return render_template('welcome.html', club=club, competitions=competitions)
 
 
 @app.route('/book/<competition>/<club>')
-def book(competition,club):
+def book(competition, club):
     foundClub = [c for c in clubs if c['name'] == club][0]
     foundCompetition = [c for c in competitions if c['name'] == competition][0]
     if foundClub and foundCompetition:
-        return render_template('booking.html',club=foundClub,competition=foundCompetition)
+        return render_template('booking.html', club=foundClub, competition=foundCompetition)
     else:
         flash("Something went wrong-please try again")
         return render_template('welcome.html', club=club, competitions=competitions)
@@ -79,7 +91,7 @@ def purchasePlaces():
     placesRequired = int(request.form['places'])
     competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
     totalPlacesBooked = placesAlreadyBooked + placesRequired
-    if  totalPlacesBooked > 12:
+    if totalPlacesBooked > 12:
         error_message = "You can't book more than 12 places for an event"
         return render_template('booking.html', club=club, competition=competition, placesAlreadyBooked=placesAlreadyBooked,
                                error_message=error_message)
@@ -88,7 +100,7 @@ def purchasePlaces():
             competition['numberOfPlaces']) - placesRequired
         competition = updatePlacesBookedOrCreate(competition, club,
                                                  totalPlacesBooked)
-        with open('competitions.json', "w") as cr:
+        with open('database/competitions.json', "w") as cr:
             data = {'competitions': competitions}
             json.dump(data, cr)
         flash('Great-booking complete!')
@@ -101,3 +113,7 @@ def purchasePlaces():
 @app.route('/logout')
 def logout():
     return redirect(url_for('index'))
+
+
+if __name__ == "__main__":
+    app.run(debug=False)
