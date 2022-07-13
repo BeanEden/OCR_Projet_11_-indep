@@ -55,7 +55,6 @@ def purchasePlaces():
     club['points'] = int(club['points']) - placesRequired
     with open(os.getcwd()+'/database/clubs.json', "w") as c:
         data = {'clubs': clubs}
-        print(data)
         json.dump(data, c)
     flash('Great-booking complete!')
     return render_template('welcome.html', club=club, competitions=competitions)
