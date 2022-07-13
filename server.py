@@ -1,15 +1,16 @@
 import json
 from flask import Flask,render_template,request,redirect,flash,url_for
+import os
 
 
 def loadClubs():
-    with open('clubs.json') as c:
+    with open(os.getcwd()+'/database/clubs.json') as c:
          listOfClubs = json.load(c)['clubs']
          return listOfClubs
 
 
 def loadCompetitions():
-    with open('competitions.json') as comps:
+    with open(os.getcwd()+'/database/competitions.json') as comps:
          listOfCompetitions = json.load(comps)['competitions']
          return listOfCompetitions
 
@@ -41,7 +42,7 @@ def book(competition,club):
         return render_template('welcome.html', club=club, competitions=competitions)
 
 
-@app.route('/purchasePlaces',methods=['POST'])
+@app.route('/purchasePlaces', methods=['POST'])
 def purchasePlaces():
     competition = [c for c in competitions if c['name'] == request.form['competition']][0]
     club = [c for c in clubs if c['name'] == request.form['club']][0]
@@ -54,10 +55,14 @@ def purchasePlaces():
 # TODO: Add route for points display
 @app.route('/clubs')
 def clubsTable():
-    sorted_list = sorted(clubs, key=lambda item: item['date'])
+    sorted_list = sorted(clubs, key=lambda item: item['name'])
     return render_template('clubs.html', clubs = sorted_list)
 
 
 @app.route('/logout')
 def logout():
     return redirect(url_for('index'))
+
+
+if __name__ == "__main__":
+    app.run(debug=False)
