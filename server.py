@@ -21,9 +21,11 @@ app.secret_key = 'something_special'
 competitions = loadCompetitions()
 clubs = loadClubs()
 
+
 @app.route('/')
 def index():
     return render_template('index.html')
+
 
 @app.route('/showSummary',methods=['POST'])
 def showSummary():
@@ -56,7 +58,7 @@ def purchasePlaces():
 @app.route('/clubs')
 def clubsTable():
     sorted_list = sorted(clubs, key=lambda item: item['name'])
-    return render_template('clubs.html', clubs = sorted_list)
+    return render_template('clubs.html', clubs=sorted_list)
 
 
 @app.route('/logout')
