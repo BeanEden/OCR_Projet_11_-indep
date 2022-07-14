@@ -1,6 +1,6 @@
 import pytest
 from server import app, loadPlacesAlreadyBooked, updatePlacesBookedOrCreate
-from utilities.db_manage import reset_database
+from tests.utilities.db_manage import reset_database
 
 club = "Simply Lift"
 competition = "Spring Festival"
