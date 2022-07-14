@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {"clubs":[
     {
         "name":"Simply Lift",
@@ -14,3 +15,6 @@
         "points":"12"
     }
 ]}
+=======
+{"clubs": [{"name": "Simply Lift", "email": "john@simplylift.co", "points": "13"}, {"name": "Iron Temple", "email": "admin@irontemple.com", "points": 21}, {"name": "She Lifts", "email": "kate@shelifts.co.uk", "points": "12"}]}
+>>>>>>> BUG_Clubs_should_not_be_able_to_use_more_than_their_points_allowed
