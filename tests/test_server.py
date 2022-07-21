@@ -1,6 +1,6 @@
 import pytest
 from server import app
-<<<<<<< HEAD
+
 
 
 
@@ -13,7 +13,7 @@ competition = "Spring Festival"
 
 
 
-=======
+
 from tests.utilities.db_manage import get_club
 
 
@@ -21,7 +21,7 @@ club = "Simply Lift"
 competition = "Spring Festival"
 
 
->>>>>>> BUG_Point_updates_are_not_reflected
+
 @pytest.fixture
 def client():
     app.testing = True
@@ -29,7 +29,7 @@ def client():
         yield client
 
 
-<<<<<<< HEAD
+
 
 def test_get_index_page(client):
     rv = client.get('/')
@@ -72,7 +72,7 @@ def test_purchasePlace_booking_impossible(client):
     assert rv.status_code == 200
     assert data.find('<p>You don&#39;t have enough points to make this reservation</p>') != -1
 
-=======
+
 def test_purchasePlace_booking_should_work(client):
     places_bought = 2
     club_base = get_club(club)
@@ -83,4 +83,3 @@ def test_purchasePlace_booking_should_work(client):
     assert rv.status_code == 200
     assert data.find('<li>Great-booking complete!</li>') != -1
     assert data.find(message) != -1
->>>>>>> BUG_Point_updates_are_not_reflected
