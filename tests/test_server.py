@@ -1,4 +1,5 @@
 import pytest
+<<<<<<< HEAD
 from server import app
 
 from tests.utilities.db_manage import get_club
@@ -12,6 +13,16 @@ unregistered_mail = "unregistered_mail@irontemple.com"
 club = "Iron Temple"
 competition = "Spring Festival"
 
+=======
+from server import app, loadPlacesAlreadyBooked, updatePlacesBookedOrCreate
+from tests.utilities.db_manage import reset_database
+
+club = "Simply Lift"
+competition = "Spring Festival"
+places_bought = 2
+
+reset_database(club, competition)
+>>>>>>> BUG_Clubs_shouldn't_be_able_to_book_more_than_12_places_per_competition
 
 
 @pytest.fixture
@@ -21,6 +32,7 @@ def client():
         yield client
 
 
+<<<<<<< HEAD
 
 def test_get_index_page(client):
     rv = client.get('/')
@@ -58,6 +70,125 @@ def test_purchasePlace_booking_should_work(client):
     assert rv.status_code == 200
     assert data.find('<li>Great-booking complete!</li>') != -1
     assert data.find(message) != -1
+=======
+@pytest.fixture
+def club_one():
+    club = {"name": "Simply Lift", "points": "13"}
+    return club
+
+
+@pytest.fixture
+def competition_without_club_list():
+    competition = {"name": "Spring Festival", "numberOfPlaces": 3}
+    return competition
+
+
+@pytest.fixture
+def competition_with_empty_club_list():
+    competition = {"name": "Spring Festival", "numberOfPlaces": 3,
+                   "clubsParticipating": []}
+    return competition
+
+
+@pytest.fixture
+def competition_with_other_club():
+    competition = {"name": "Spring Festival",
+                   "numberOfPlaces": 3,
+                   "clubsParticipating": [
+                       {"club": "Iron Temple", "placesBooked": 4}
+                   ]}
+    return competition
+
+
+@pytest.fixture
+def competition_with_club_one():
+    competition = {"name": "Spring Festival",
+                   "numberOfPlaces": 3,
+                   "clubsParticipating": [
+                       {"club": "Simply Lift", "placesBooked": 4}
+                   ]}
+    return competition
+
+
+def test_loadPlacesAlreadyBooked_no_club_should_return_zero(competition_without_club_list, club_one):
+    competition = competition_without_club_list
+    club = club_one
+    assert loadPlacesAlreadyBooked(competition, club) == 0
+
+
+def test_loadPlacesAlreadyBooked_empty_list_should_return_zero(competition_with_empty_club_list, club_one):
+    competition = competition_with_empty_club_list
+    club = club_one
+    assert loadPlacesAlreadyBooked(competition, club) == 0
+
+
+def test_loadPlacesAlreadyBooked_other_clubs_participating_should_return_zero(competition_with_other_club, club_one):
+    competition = competition_with_other_club
+    club = club_one
+    assert loadPlacesAlreadyBooked(competition, club) == 0
+
+
+def test_loadPlacesAlreadyBooked_clubs_participating_should_return_four(competition_with_club_one, club_one):
+    competition = competition_with_club_one
+    club = club_one
+    assert loadPlacesAlreadyBooked(competition, club) == 4
+
+
+def test_updatePlaceBookedOrCreate_without_club_list(competition_without_club_list, club_one):
+    competition = competition_without_club_list
+    club = club_one
+    test = updatePlacesBookedOrCreate(competition, club, places_bought)
+    expected_value = {"name": "Spring Festival",
+                      "numberOfPlaces": 3,
+                      "clubsParticipating": [
+                          {"club": "Simply Lift", "placesBooked": 2}
+                      ]}
+    assert test == expected_value
+
+
+def test_updatePlaceBookedOrCreate_empty_club_list(competition_with_empty_club_list, club_one):
+    competition = competition_with_empty_club_list
+    club = club_one
+    test = updatePlacesBookedOrCreate(competition, club, places_bought)
+    expected_value = {"name": "Spring Festival",
+                   "numberOfPlaces": 3,
+                   "clubsParticipating": [
+                       {"club": "Simply Lift", "placesBooked": 2}
+                   ]}
+    assert test == expected_value
+
+
+def test_updatePlaceBookedOrCreate_other_club(competition_with_other_club, club_one):
+    competition = competition_with_other_club
+    club = club_one
+    test = updatePlacesBookedOrCreate(competition, club, places_bought)
+    expected_value = {"name": "Spring Festival",
+                      "numberOfPlaces": 3,
+                      "clubsParticipating": [
+                          {"club": "Iron Temple", "placesBooked": 4},
+                          {"club": "Simply Lift", "placesBooked": 2}
+                      ]}
+    assert test == expected_value
+
+
+def test_updatePlaceBookedOrCreate_with_club_one(competition_with_club_one, club_one):
+    competition = competition_with_club_one
+    club = club_one
+    test = updatePlacesBookedOrCreate(competition, club, places_bought)
+    expected_value = {"name": "Spring Festival",
+                      "numberOfPlaces": 3,
+                      "clubsParticipating": [
+                          {"club": "Simply Lift", "placesBooked": 2}
+                      ]}
+    assert test == expected_value
+
+
+def test_purchasePlace_booking_should_work(client):
+    rv = client.post('/purchasePlaces', data=dict(club=club, competition=competition, places=places_bought))
+    data = rv.data.decode()
+    assert rv.status_code == 200
+    assert data.find('<li>Great-booking complete!</li>') != -1
+>>>>>>> BUG_Clubs_shouldn't_be_able_to_book_more_than_12_places_per_competition
 
 
 def test_purchasePlace_booking_impossible(client):
@@ -65,6 +196,7 @@ def test_purchasePlace_booking_impossible(client):
     rv = client.post('/purchasePlaces', data=dict(club=club, competition=competition, places=places_bought))
     data = rv.data.decode()
     assert rv.status_code == 200
+<<<<<<< HEAD
     assert data.find('<p>You don&#39;t have enough points to make this reservation</p>') != -1
 
 
@@ -104,3 +236,6 @@ def test_showSummary(client):
     assert rv.status_code == 200
     assert data.find('<a href="/book/Spring%20Festival/Iron%20Temple">Book Places</a>') != -1
 
+=======
+    assert data.find('<p>You can&#39;t book more than 12 places for an event</p>') != -1
+>>>>>>> BUG_Clubs_shouldn't_be_able_to_book_more_than_12_places_per_competition
