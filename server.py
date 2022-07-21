@@ -1,7 +1,7 @@
 import json
-from flask import Flask,render_template,request,redirect,flash,url_for
+import datetime
+from flask import Flask, render_template, request, redirect, flash, url_for
 import os
-
 
 
 def loadClubs():
@@ -22,17 +22,39 @@ app.secret_key = 'something_special'
 competitions = loadCompetitions()
 clubs = loadClubs()
 
+
+def datetime_check(competition):
+    today = date_str_split(str(datetime.datetime.now()))
+    competition_date = date_str_split(competition['date'])
+
+    if int(today) < int(competition_date):
+        competition['status'] = 'open'
+    else:
+        competition['status'] = 'closed'
+    return competition
+
+
+def date_str_split(date):
+    days = date[:10].replace("-", "")
+    hours = date[11:16].replace(":", "")
+    date = days+hours
+    return str(date)
+
+
 @app.route('/')
 def index(error_message="False"):
     return render_template('index.html', error_message=error_message)
 
 
-@app.route('/showSummary',methods=['POST'])
+
+@app.route('/showSummary', methods=['POST'])
 def showSummary():
     try:
         club = [club for club in clubs if club['email'] == request.form['email']][0]
     except IndexError:
         return index(error_message="Sorry, that email wasn't found.")
+    for i in competitions:
+        i = datetime_check(i)
     return render_template('welcome.html', club=club, competitions=competitions)
 
 
