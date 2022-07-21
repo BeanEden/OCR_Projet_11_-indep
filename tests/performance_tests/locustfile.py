@@ -1,6 +1,7 @@
 from locust import HttpUser, task
 
 
+<<<<<<< HEAD
 
 valid_email = "admin@irontemple.com"
 places_bought = 1
@@ -32,3 +33,10 @@ class ProjectPerfTest(HttpUser):
 
 
 
+=======
+class ProjectPerfTest(HttpUser):
+
+        @task(6)
+        def clubsTable(self):
+            response = self.client.get("/clubs")
+>>>>>>> FEATURE_Implement_Points_Display_Board

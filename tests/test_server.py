@@ -1,5 +1,6 @@
 import pytest
 <<<<<<< HEAD
+<<<<<<< HEAD
 from server import app
 
 from tests.utilities.db_manage import get_club
@@ -24,6 +25,10 @@ places_bought = 2
 reset_database(club, competition)
 >>>>>>> BUG_Clubs_shouldn't_be_able_to_book_more_than_12_places_per_competition
 
+=======
+from server import app
+
+>>>>>>> FEATURE_Implement_Points_Display_Board
 
 @pytest.fixture
 def client():
@@ -32,6 +37,7 @@ def client():
         yield client
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 def test_get_index_page(client):
@@ -239,3 +245,15 @@ def test_showSummary(client):
 =======
     assert data.find('<p>You can&#39;t book more than 12 places for an event</p>') != -1
 >>>>>>> BUG_Clubs_shouldn't_be_able_to_book_more_than_12_places_per_competition
+=======
+def test_clubsTable(client):
+    expected_club_one = 'Iron Temple - 4 points'
+    expected_club_two = 'She Lifts - 12 points'
+    expected_club_three = 'Simply Lift - 13 points'
+    rv = client.get('/clubs')
+    data = rv.data.decode()
+    assert rv.status_code == 200
+    assert data.find(expected_club_one) != -1
+    assert data.find(expected_club_two) != -1
+    assert data.find(expected_club_three) != -1
+>>>>>>> FEATURE_Implement_Points_Display_Board
