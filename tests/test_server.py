@@ -1,6 +1,4 @@
 import pytest
-<<<<<<< HEAD
-<<<<<<< HEAD
 from server import app
 
 from tests.utilities.db_manage import get_club
@@ -14,7 +12,6 @@ unregistered_mail = "unregistered_mail@irontemple.com"
 club = "Iron Temple"
 competition = "Spring Festival"
 
-=======
 from server import app, loadPlacesAlreadyBooked, updatePlacesBookedOrCreate
 from tests.utilities.db_manage import reset_database
 
@@ -23,12 +20,8 @@ competition = "Spring Festival"
 places_bought = 2
 
 reset_database(club, competition)
->>>>>>> BUG_Clubs_shouldn't_be_able_to_book_more_than_12_places_per_competition
 
-=======
-from server import app
 
->>>>>>> FEATURE_Implement_Points_Display_Board
 
 @pytest.fixture
 def client():
@@ -37,8 +30,6 @@ def client():
         yield client
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 def test_get_index_page(client):
     rv = client.get('/')
@@ -76,7 +67,8 @@ def test_purchasePlace_booking_should_work(client):
     assert rv.status_code == 200
     assert data.find('<li>Great-booking complete!</li>') != -1
     assert data.find(message) != -1
-=======
+
+
 @pytest.fixture
 def club_one():
     club = {"name": "Simply Lift", "points": "13"}
@@ -194,7 +186,7 @@ def test_purchasePlace_booking_should_work(client):
     data = rv.data.decode()
     assert rv.status_code == 200
     assert data.find('<li>Great-booking complete!</li>') != -1
->>>>>>> BUG_Clubs_shouldn't_be_able_to_book_more_than_12_places_per_competition
+
 
 
 def test_purchasePlace_booking_impossible(client):
@@ -202,7 +194,6 @@ def test_purchasePlace_booking_impossible(client):
     rv = client.post('/purchasePlaces', data=dict(club=club, competition=competition, places=places_bought))
     data = rv.data.decode()
     assert rv.status_code == 200
-<<<<<<< HEAD
     assert data.find('<p>You don&#39;t have enough points to make this reservation</p>') != -1
 
 
@@ -241,19 +232,4 @@ def test_showSummary(client):
     data = rv.data.decode()
     assert rv.status_code == 200
     assert data.find('<a href="/book/Spring%20Festival/Iron%20Temple">Book Places</a>') != -1
-
-=======
     assert data.find('<p>You can&#39;t book more than 12 places for an event</p>') != -1
->>>>>>> BUG_Clubs_shouldn't_be_able_to_book_more_than_12_places_per_competition
-=======
-def test_clubsTable(client):
-    expected_club_one = 'Iron Temple - 4 points'
-    expected_club_two = 'She Lifts - 12 points'
-    expected_club_three = 'Simply Lift - 13 points'
-    rv = client.get('/clubs')
-    data = rv.data.decode()
-    assert rv.status_code == 200
-    assert data.find(expected_club_one) != -1
-    assert data.find(expected_club_two) != -1
-    assert data.find(expected_club_three) != -1
->>>>>>> FEATURE_Implement_Points_Display_Board

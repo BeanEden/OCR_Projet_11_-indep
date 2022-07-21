@@ -1,21 +1,18 @@
 import os
 import json
-<<<<<<< HEAD
 
-=======
 # from tests.test_server import club, competition, places_bought
->>>>>>> BUG_Clubs_shouldn't_be_able_to_book_more_than_12_places_per_competition
+
 
 path = os.getcwd()
 path = path.replace("utilities", "")
 
 
 club = "Simply Lift"
-<<<<<<< HEAD
-=======
+
 competition = "Spring Festival"
 places_bought = 2
->>>>>>> BUG_Clubs_shouldn't_be_able_to_book_more_than_12_places_per_competition
+
 
 
 def loadClubs():
@@ -24,14 +21,15 @@ def loadClubs():
          return listOfClubs
 
 
-<<<<<<< HEAD
+
 clubs = loadClubs()
 
 
 def get_club(club):
     club = [c for c in clubs if c['name'] == club][0]
     return club
-=======
+
+
 def loadCompetitions():
     with open(path+'/database/competitions.json') as comps:
          listOfCompetitions = json.load(comps)['competitions']
@@ -59,4 +57,4 @@ def reset_database(club, competition):
     with open(path + '/database/clubs.json', "w") as cr:
         data = {'clubs': clubs}
         json.dump(data, cr)
->>>>>>> BUG_Clubs_shouldn't_be_able_to_book_more_than_12_places_per_competition
+
