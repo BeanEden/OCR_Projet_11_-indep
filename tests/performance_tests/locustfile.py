@@ -4,7 +4,7 @@ from locust import HttpUser, task
 
 valid_email = "admin@irontemple.com"
 places_bought = 1
-club = "Simply Lift"
+club = "Iron Temple"
 competition = "Spring Festival"
 
 
