@@ -77,7 +77,11 @@ def purchasePlaces():
     club = [c for c in clubs if c['name'] == request.form['club']][0]
     placesRequired = int(request.form['places'])
     competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
-    with open('database/competitions.json', "w") as cr:
+    club['points'] = int(club['points']) - placesRequired
+    with open(os.getcwd() + '/database/clubs.json', "w") as c:
+        data = {'clubs': clubs}
+        json.dump(data, c)
+    with open(os.getcwd()+'/database/competitions.json', "w") as cr:
         data = {'competitions': competitions}
         json.dump(data, cr)
     flash('Great-booking complete!')

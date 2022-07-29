@@ -1,6 +1,7 @@
 import pytest
 from server import app
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
 valid_email = "admin@irontemple.com"
@@ -12,6 +13,13 @@ from server import date_str_split, datetime_check
 
 valid_email = "admin@irontemple.com"
 >>>>>>> BUG_Booking_places_in_past_competitions
+=======
+from tests.utilities.db_manage import get_club
+
+
+club = "Simply Lift"
+competition = "Spring Festival"
+>>>>>>> BUG_Point_updates_are_not_reflected
 
 
 @pytest.fixture
@@ -21,6 +29,7 @@ def client():
         yield client
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 def test_get_index_page(client):
     rv = client.get('/')
@@ -72,3 +81,15 @@ def test_showSummary(client):
     assert rv.status_code == 200
     assert data.find('<a href="/book/Spring%20Festival/Iron%20Temple">Book Places</a>') != -1
 >>>>>>> BUG_Booking_places_in_past_competitions
+=======
+def test_purchasePlace_booking_should_work(client):
+    places_bought = 2
+    club_base = get_club(club)
+    rv = client.post('/purchasePlaces', data=dict(club=club, competition=competition, places=places_bought))
+    data = rv.data.decode()
+    points = club_base['points']
+    message = 'Points available: ' + str(points-places_bought)
+    assert rv.status_code == 200
+    assert data.find('<li>Great-booking complete!</li>') != -1
+    assert data.find(message) != -1
+>>>>>>> BUG_Point_updates_are_not_reflected
