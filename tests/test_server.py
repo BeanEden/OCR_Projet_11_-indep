@@ -1,25 +1,26 @@
 import pytest
 from server import app
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 
 valid_email = "admin@irontemple.com"
 unvalid_email = "unvalidmail"
 unregistered_mail = "unregistered_mail@irontemple.com"
-=======
+
 from server import date_str_split, datetime_check
 
 
 valid_email = "admin@irontemple.com"
->>>>>>> BUG_Booking_places_in_past_competitions
-=======
+
 from tests.utilities.db_manage import get_club
 
 
 club = "Simply Lift"
 competition = "Spring Festival"
->>>>>>> BUG_Point_updates_are_not_reflected
+
+
+
+club = "Iron Temple"
+competition = "Spring Festival"
 
 
 @pytest.fixture
@@ -29,6 +30,7 @@ def client():
         yield client
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 def test_get_index_page(client):
@@ -93,3 +95,19 @@ def test_purchasePlace_booking_should_work(client):
     assert data.find('<li>Great-booking complete!</li>') != -1
     assert data.find(message) != -1
 >>>>>>> BUG_Point_updates_are_not_reflected
+=======
+def test_purchasePlace_booking_should_work(client):
+    places_bought = 1
+    rv = client.post('/purchasePlaces', data=dict(club=club, competition=competition, places=places_bought))
+    data = rv.data.decode()
+    assert rv.status_code == 200
+    assert data.find('<li>Great-booking complete!</li>') != -1
+
+
+def test_purchasePlace_booking_impossible(client):
+    places_bought = 50
+    rv = client.post('/purchasePlaces', data=dict(club=club, competition=competition, places=places_bought))
+    data = rv.data.decode()
+    assert rv.status_code == 200
+    assert data.find('<p>You don&#39;t have enough points to make this reservation</p>') != -1
+>>>>>>> BUG_Clubs_should_not_be_able_to_use_more_than_their_points_allowed

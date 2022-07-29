@@ -76,8 +76,16 @@ def purchasePlaces():
     competition = [c for c in competitions if c['name'] == request.form['competition']][0]
     club = [c for c in clubs if c['name'] == request.form['club']][0]
     placesRequired = int(request.form['places'])
-    competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
-    club['points'] = int(club['points']) - placesRequired
+    if placesRequired > int(club['points']):
+        error_message = "You don't have enough points to make this reservation"
+        return render_template('booking.html', club=club, competition=competition, error_message=error_message)
+    else:
+        competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
+        club['points'] = int(club['points'])-placesRequired
+        with open('database/clubs.json', "w") as c:
+            data = {'clubs': clubs}
+            json.dump(data, c)
+        club['points'] = int(club['points']) - placesRequired
     with open(os.getcwd() + '/database/clubs.json', "w") as c:
         data = {'clubs': clubs}
         json.dump(data, c)
