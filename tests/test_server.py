@@ -228,3 +228,13 @@ def test_purchasePlace_book_more_than_12_in_2_booking(client):
     reset_database(club, competition)
     assert rv.status_code == 200
     assert data.find('<p>You can&#39;t book more than 12 places for an event</p>') != -1
+def test_clubsTable(client):
+    expected_club_one = 'Iron Temple - 4 points'
+    expected_club_two = 'She Lifts - 12 points'
+    expected_club_three = 'Simply Lift - 13 points'
+    rv = client.get('/clubs')
+    data = rv.data.decode()
+    assert rv.status_code == 200
+    assert data.find(expected_club_one) != -1
+    assert data.find(expected_club_two) != -1
+    assert data.find(expected_club_three) != -1
