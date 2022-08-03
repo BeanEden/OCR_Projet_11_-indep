@@ -117,34 +117,27 @@ def purchasePlaces():
     competition = [c for c in competitions if c['name'] == request.form['competition']][0]
     club = [c for c in clubs if c['name'] == request.form['club']][0]
     placesAlreadyBooked = loadPlacesAlreadyBooked(competition, club)
+    print("placesAlreadybooked", placesAlreadyBooked)
     placesRequired = int(request.form['places'])
+    print("placesRequired", placesRequired)
     if placesRequired > int(club['points']):
         error_message = "You don't have enough points to make this reservation"
         return render_template('booking.html', club=club, competition=competition, error_message=error_message)
-    else:
-        competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
-        club['points'] = int(club['points'])-placesRequired
-        with open('database/clubs.json', "w") as c:
-            data = {'clubs': clubs}
-            json.dump(data, c)
-        club['points'] = int(club['points']) - placesRequired
-    with open(os.getcwd() + '/database/clubs.json', "w") as c:
-        data = {'clubs': clubs}
-        json.dump(data, c)
-    with open(os.getcwd()+'/database/competitions.json', "w") as cr:
-        data = {'competitions': competitions}
-        json.dump(data, cr)
+
     totalPlacesBooked = placesAlreadyBooked + placesRequired
     if totalPlacesBooked > 12:
         error_message = "You can't book more than 12 places for an event"
         return render_template('booking.html', club=club, competition=competition, placesAlreadyBooked=placesAlreadyBooked,
                                error_message=error_message)
     else:
-        competition['numberOfPlaces'] = int(
-            competition['numberOfPlaces']) - placesRequired
+        competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
+        club['points'] = int(club['points'])-placesRequired
         competition = updatePlacesBookedOrCreate(competition, club,
                                                  totalPlacesBooked)
-        with open('database/competitions.json', "w") as cr:
+        with open(os.getcwd() + '/database/clubs.json', "w") as c:
+            data = {'clubs': clubs}
+            json.dump(data, c)
+        with open(os.getcwd() +'/database/competitions.json', "w") as cr:
             data = {'competitions': competitions}
             json.dump(data, cr)
         flash('Great-booking complete!')

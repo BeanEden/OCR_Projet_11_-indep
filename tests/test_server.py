@@ -9,8 +9,6 @@ club = "Simply Lift"
 competition = "Spring Festival"
 places_bought = 2
 
-reset_database(club, competition)
-
 
 
 @pytest.fixture
@@ -72,10 +70,23 @@ def test_showSummary(client):
     assert data.find('<a href="/book/Spring%20Festival/Iron%20Temple">Book Places</a>') != -1
 
 
-def test_purchasePlace_booking_should_work(client):
-    places_bought = 2
+# def test_purchasePlace_booking_should_work(client):
+#     reset = reset_database(club, competition)
+#     club_base = get_club(club)
+#     rv = client.post('/purchasePlaces', data=dict(club=club, competition=competition, places=places_bought))
+#     data = rv.data.decode()
+#     points = club_base['points']
+#     print("points", points)
+#     message = 'Points available: ' + str(points-places_bought)
+#     assert rv.status_code == 200
+#     assert data.find('<li>Great-booking complete!</li>') != -1
+#     assert data.find(message) != -1
+
+def test_purchasePlace_booking_should_work(client, club_one, competition_with_club_one):
+    reset = reset_database(club, competition)
     club_base = get_club(club)
-    rv = client.post('/purchasePlaces', data=dict(club=club, competition=competition, places=places_bought))
+    compet_loaded = competition_with_club_one
+    rv = client.post('/purchasePlaces', data=dict(club=club_one["name"], competition=compet_loaded["name"], places=places_bought))
     data = rv.data.decode()
     points = club_base['points']
     message = 'Points available: ' + str(points-places_bought)
@@ -86,7 +97,7 @@ def test_purchasePlace_booking_should_work(client):
 
 @pytest.fixture
 def club_one():
-    club = {"name": "Simply Lift", "points": "13"}
+    club = {"name": "Simply Lift", "points": "20"}
     return club
 
 
@@ -200,15 +211,20 @@ def test_updatePlaceBookedOrCreate_with_club_one(competition_with_club_one, club
 def test_purchasePlace_booking_impossible(client):
     places_bought = 50
     rv = client.post('/purchasePlaces', data=dict(club=club, competition=competition, places=places_bought))
+    reset_database(club, competition)
     data = rv.data.decode()
     assert rv.status_code == 200
     assert data.find('<p>You don&#39;t have enough points to make this reservation</p>') != -1
 
 
 def test_purchasePlace_book_more_than_12_in_2_booking(client):
+    reset_database(club, competition)
     places_bought = 7
+    club_two = get_club(club)
+    rv1 = client.post('/purchasePlaces', data=dict(club=club, competition=competition, places=places_bought))
     rv = client.post('/purchasePlaces', data=dict(club=club, competition=competition, places=places_bought))
-    rv = client.post('/purchasePlaces', data=dict(club=club, competition=competition, places=places_bought))
+    club_two = get_club(club)
     data = rv.data.decode()
+    reset_database(club, competition)
     assert rv.status_code == 200
     assert data.find('<p>You can&#39;t book more than 12 places for an event</p>') != -1
