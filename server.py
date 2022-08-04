@@ -117,9 +117,7 @@ def purchasePlaces():
     competition = [c for c in competitions if c['name'] == request.form['competition']][0]
     club = [c for c in clubs if c['name'] == request.form['club']][0]
     placesAlreadyBooked = loadPlacesAlreadyBooked(competition, club)
-    print("placesAlreadybooked", placesAlreadyBooked)
     placesRequired = int(request.form['places'])
-    print("placesRequired", placesRequired)
     if placesRequired > int(club['points']):
         error_message = "You don't have enough points to make this reservation"
         return render_template('booking.html', club=club, competition=competition, error_message=error_message)
