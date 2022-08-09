@@ -45,7 +45,7 @@ def date_str_split(date):
 
 
 def loadPlacesAlreadyBooked(competition, club):
-    try :
+    try:
         if len(competition['clubsParticipating']) > 0:
             count = 0
             for i in competition['clubsParticipating']:
